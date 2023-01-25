@@ -46,7 +46,7 @@ jobs:
       - name: Terraform Init
         uses: hashicorp/terraform-github-actions/init@v0.4.0
         env:
-          HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
+          TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
         
 
       - name: Terraform Validate
@@ -64,12 +64,12 @@ jobs:
         if: github.event_name == 'push'
         run: terraform plan -no-color
         env:
-          HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
+          TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
         working-directory: "./k3s-kube/"
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve
         env:
-          HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
+          TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
         working-directory: "./k3s-kube/"
