@@ -81,8 +81,7 @@ jobs:
       run: terraform init
       env:
         HCLOUD_TOKEN: ${{ secrets.TF_HCLOUD_TOKEN }}
-      with:
-        path: /k3s-kube
+
 
 
     # Checks that all Terraform configuration files adhere to a canonical format
