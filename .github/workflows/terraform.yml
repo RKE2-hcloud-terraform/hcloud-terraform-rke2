@@ -20,11 +20,11 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
       
-      - name: ssh install
-        uses: webfactory/ssh-agent@v0.7.0
+      - name: Setup SSH
+        uses: MrSquaare/ssh-setup-action@v2
         with:
-            ssh-private-key: |
-                  ${{ secrets.SSH_ID_RSA_PRIVATE }}
+          host: github.com
+          private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
 
       - name: Terraform Init
