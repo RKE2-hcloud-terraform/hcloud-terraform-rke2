@@ -48,7 +48,7 @@ on:
   push:
     branches: [ "main" ]
     paths:
-      -  /k3s-kube    
+      -  k3s-kube    
   pull_request:
 permissions:
   contents: read
@@ -81,6 +81,8 @@ jobs:
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
       run: terraform init
+      with:
+        path: /k3s-kube
       env:
         HCLOUD_TOKEN: ${{ secrets.TF_HCLOUD_TOKEN }}
 
@@ -103,7 +105,8 @@ jobs:
     - name: Terraform Apply
       if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
       run: terraform apply -auto-approve -input=false
-      env:
-        HCLOUD_TOKEN: ${{ secrets.TF_HCLOUD_TOKEN }}
       with:
         path: /k3s-kube
+      env:
+        HCLOUD_TOKEN: ${{ secrets.TF_HCLOUD_TOKEN }}
+
