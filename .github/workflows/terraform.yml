@@ -47,8 +47,6 @@ name: 'Terraform'
 on:
   push:
     branches: [ "main" ]
-    paths:
-      - hcloud-terraform-rke2/k3s-kube/**
   pull_request:
 permissions:
   contents: read
