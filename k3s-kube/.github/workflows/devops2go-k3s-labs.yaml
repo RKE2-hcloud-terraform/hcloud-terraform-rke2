@@ -6,7 +6,7 @@ on:
   push:
     branches: [ "main" ]
     paths:
-      -  'RKE2-hcloud-terraform/hcloud-terraform-rke2/k3s-kube/**'   
+      -  "RKE2-hcloud-terraform/hcloud-terraform-rke2/k3s-kube/**"   
   pull_request:
 permissions:
   contents: read
