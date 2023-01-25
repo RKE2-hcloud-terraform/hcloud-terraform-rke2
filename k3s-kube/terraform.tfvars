@@ -1,0 +1,6 @@
+hcloud_token = ""
+network_region = ""
+location = ""
+cluster_name = ""
+control_plane_server_type = ""
+node_type = ""
