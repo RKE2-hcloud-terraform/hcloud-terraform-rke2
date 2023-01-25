@@ -61,9 +61,13 @@ jobs:
         id: plan
         if: github.event_name == 'push'
         run: terraform plan -no-color
+        env:
+          HCLOUD_TOKEN: ${{ secrets.TF_HCLOUD_API_TOKEN }}
         working-directory: "./k3s-kube/"
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve
+        env:
+          HCLOUD_TOKEN: ${{ secrets.TF_HCLOUD_API_TOKEN }}
         working-directory: "./k3s-kube/"
