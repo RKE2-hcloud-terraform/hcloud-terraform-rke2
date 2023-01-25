@@ -6,7 +6,7 @@ on:
   push:
     branches: [ "main" ]
     paths:
-      -  'k3s-kube/**'   
+      -  'RKE2-hcloud-terraform/hcloud-terraform-rke2/k3s-kube/**'   
   pull_request:
 permissions:
   contents: read
@@ -33,8 +33,7 @@ jobs:
       uses: hashicorp/setup-terraform@v2
       env:
         HCLOUD_TOKEN: ${{ secrets.TF_HCLOUD_TOKEN }}
-      with:
-        path: k3s-kube
+      
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
@@ -43,6 +42,7 @@ jobs:
       #   path: /k3s-kube
       env:
         HCLOUD_TOKEN: ${{ secrets.TF_HCLOUD_TOKEN }}
+      working-directory: ./RKE2-hcloud-terraform/hcloud-terraform-rke2/k3s-kube
 
 
 
@@ -67,4 +67,5 @@ jobs:
       #   path: /k3s-kube
       env:
         HCLOUD_TOKEN: ${{ secrets.TF_HCLOUD_TOKEN }}
+      working-directory: ./RKE2-hcloud-terraform/hcloud-terraform-rke2/k3s-kube
 
