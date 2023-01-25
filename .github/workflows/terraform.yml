@@ -25,7 +25,7 @@ jobs:
         with:
             ssh-private-key: |
                   ${{ secrets.SSH_ID_RSA_PRIVATE }}
-                  ${{ secrets.SSH_ID_RSA_PUBLIC }}
+
 
       - name: Terraform Init
         id: init
