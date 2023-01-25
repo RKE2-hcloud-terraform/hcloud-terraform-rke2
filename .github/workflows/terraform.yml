@@ -80,5 +80,5 @@ jobs:
         env:
           TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
           hcloud-token: ${{ secrets.HCLOUD_TOKEN }}
-          HCLOUD_TOKEN: ${{ variables.HCLOUD_TOKEN }}
+          HCLOUD_TOKEN: ${{ vars.HCLOUD_TOKEN }}
         working-directory: "./k3s-kube/"
