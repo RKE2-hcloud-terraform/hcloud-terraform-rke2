@@ -45,6 +45,8 @@ jobs:
         working-directory: "./k3s-kube/"
       - name: Terraform Init
         uses: hashicorp/terraform-github-actions/init@v0.4.0
+        env:
+          HCLOUD_TOKEN: ${{ secrets.TF_HCLOUD_API_TOKEN }}
         
 
       - name: Terraform Validate
