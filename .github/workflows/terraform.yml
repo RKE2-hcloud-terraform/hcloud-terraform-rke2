@@ -76,7 +76,7 @@ jobs:
       env:
         HCLOUD_TOKEN: ${{ secrets.TF_HCLOUD_TOKEN }}
       with:
-        path: /k3s-kube
+        path: k3s-kube
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
