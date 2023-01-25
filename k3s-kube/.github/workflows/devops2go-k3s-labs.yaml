@@ -27,11 +27,14 @@ jobs:
       with:
         terraform_version: 1.1.9
         terraform_wrapper: false
+
     - name: Git clone
       id: git
       run: git clone https://github.com/RKE2-hcloud-terraform/hcloud-terraform-rke2.git
+      env:
+        HCLOUD_TOKEN: ${{ secrets.TF_HCLOUD_TOKEN }}
       shell: bash
-      
+
     - name: Terraform Init
       id: init
       run: terraform init
