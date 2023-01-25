@@ -47,6 +47,8 @@ name: 'Terraform'
 on:
   push:
     branches: [ "main" ]
+    paths:
+      -  /k3s-kube    
   pull_request:
 permissions:
   contents: read
@@ -91,8 +93,6 @@ jobs:
     # Generates an execution plan for Terraform
     - name: Terraform Plan
       run: terraform plan -input=false
-      with:
-        path: /k3s-kube
       env:
         HCLOUD_TOKEN: ${{ secrets.TF_HCLOUD_TOKEN }}
         
