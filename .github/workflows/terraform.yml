@@ -48,7 +48,7 @@ on:
   push:
     branches: [ "main" ]
     paths:
-      - hcloud-terraform-rke2/**
+      - hcloud-terraform-rke2/k3s-kube/**
   pull_request:
 permissions:
   contents: read
@@ -75,7 +75,7 @@ jobs:
       uses: hashicorp/setup-terraform@v2
       env:
         HCLOUD_TOKEN: ${{ secrets.TF_HCLOUD_TOKEN }}
-        working-directory: ./hcloud-terraform-rke2
+        working-directory: ./hcloud-terraform-rke2/k3s-kube
       # with:
       #   cli_config_credentials_token: ${{ secrets.TF_HCLOUD_API_TOKEN }}
 
@@ -84,7 +84,7 @@ jobs:
       run: terraform init
       env:
         HCLOUD_TOKEN: ${{ secrets.TF_HCLOUD_TOKEN }}
-        working-directory: ./hcloud-terraform-rke2
+        working-directory: ./hcloud-terraform-rke2/k3s-kube
 
 
     # Checks that all Terraform configuration files adhere to a canonical format
@@ -96,7 +96,7 @@ jobs:
       run: terraform plan -input=false
       env:
         HCLOUD_TOKEN: ${{ secrets.TF_HCLOUD_TOKEN }}
-        working-directory: ./hcloud-terraform-rke2
+        working-directory: ./hcloud-terraform-rke2/k3s-kube
         # hcloud_token: ${{ secrets.TF_HCLOUD_API_TOKEN }}
 
       # On push to "main", build or change infrastructure according to Terraform configuration files
@@ -106,5 +106,5 @@ jobs:
       run: terraform apply -auto-approve -input=false
       env:
         HCLOUD_TOKEN: ${{ secrets.TF_HCLOUD_TOKEN }}
-        working-directory: ./hcloud-terraform-rke2
+        working-directory: ./hcloud-terraform-rke2/k3s-kube
         # hcloud_token: ${{ secrets.TF_HCLOUD_API_TOKEN }}
