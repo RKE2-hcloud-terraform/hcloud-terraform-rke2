@@ -68,6 +68,7 @@ jobs:
         run: terraform plan -no-color
         env:
           TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
+          hcloud-token: ${{ secrets.HCLOUD_TOKEN }}
         working-directory: "./k3s-kube/"
 
       - name: Terraform Apply
