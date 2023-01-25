@@ -24,7 +24,7 @@ jobs:
         id: init
         run: |
             terraform init
-        working-directory: "/k3s-kube/"
+        # working-directory: "./k3s-kube/"
       - name: Terraform Init
         uses: hashicorp/terraform-github-actions/init@v0.4.0
         
@@ -43,9 +43,9 @@ jobs:
         id: plan
         if: github.event_name == 'push'
         run: terraform plan -no-color
-        working-directory: "/k3s-kube/"
+        working-directory: "./k3s-kube/"
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve
-        working-directory: "/k3s-kube/"
+        working-directory: "./k3s-kube/"
