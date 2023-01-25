@@ -94,7 +94,7 @@ jobs:
       run: terraform plan -input=false
       env:
         HCLOUD_TOKEN: ${{ secrets.TF_HCLOUD_TOKEN }}
-        working-directory: ./hcloud-terraform-rke2/k3s-kube
+        working-directory: ./k3s-kube
         # hcloud_token: ${{ secrets.TF_HCLOUD_API_TOKEN }}
 
       # On push to "main", build or change infrastructure according to Terraform configuration files
@@ -104,5 +104,5 @@ jobs:
       run: terraform apply -auto-approve -input=false
       env:
         HCLOUD_TOKEN: ${{ secrets.TF_HCLOUD_TOKEN }}
-        working-directory: ./hcloud-terraform-rke2/k3s-kube
+        working-directory: ./k3s-kube
         # hcloud_token: ${{ secrets.TF_HCLOUD_API_TOKEN }}
