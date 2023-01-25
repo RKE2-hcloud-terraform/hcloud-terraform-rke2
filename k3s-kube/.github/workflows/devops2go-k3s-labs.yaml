@@ -42,7 +42,7 @@ jobs:
       #   path: /k3s-kube
       env:
         HCLOUD_TOKEN: ${{ secrets.TF_HCLOUD_TOKEN }}
-      working-directory: ./RKE2-hcloud-terraform/hcloud-terraform-rke2/k3s-kube
+      working-directory: ./k3s-kube
 
 
 
