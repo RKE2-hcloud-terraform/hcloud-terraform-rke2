@@ -43,7 +43,7 @@ module "kube-hetzner" {
 
   # These can be customized, or left with the default values
   # * For Hetzner locations see https://docs.hetzner.com/general/others/data-centers-and-connection/
-  network_region = "eu-central" # change to `us-east` if location is ash
+  network_region = var.network_region # change to `us-east` if location is ash
 
   # For the control planes, at least three nodes are the minimum for HA. Otherwise, you need to turn off the automatic upgrades (see README).
   # **It must always be an ODD number, never even!** Search the internet for "splitbrain problem with etcd" or see https://rancher.com/docs/k3s/latest/en/installation/ha-embedded/
@@ -72,24 +72,24 @@ module "kube-hetzner" {
   control_plane_nodepools = [
     {
       name        = "control-plane-fsn1",
-      server_type = "cpx21",
-      location    = "ash",
+      server_type = var.control_plane_server_type,
+      location    = var.location,
       labels      = [],
       taints      = [],
       count       = 1
     },
     {
       name        = "control-plane-nbg1",
-      server_type = "cpx21",
-      location    = "ash",
+      server_type = var.control_plane_server_type,
+      location    = var.location,
       labels      = [],
       taints      = [],
       count       = 1
     },
     {
       name        = "control-plane-hel1",
-      server_type = "cpx21",
-      location    = "ash",
+      server_type = var.control_plane_server_type,
+      location    = var.location,
       labels      = [],
       taints      = [],
       count       = 1
@@ -99,8 +99,8 @@ module "kube-hetzner" {
   agent_nodepools = [
     {
       name                 = "agent-small",
-      server_type          = "cpx21",
-      location             = "ash",
+      server_type          = var.node_type,
+      location             = var.location,
       labels               = [],
       taints               = [],
       count                = 1
@@ -108,8 +108,8 @@ module "kube-hetzner" {
     },
     {
       name                 = "agent-large",
-      server_type          = "cpx31",
-      location             = "ash",
+      server_type          = var.node_type,
+      location             = var.location,
       labels               = [],
       taints               = [],
       count                = 1
@@ -117,8 +117,8 @@ module "kube-hetzner" {
     },
     {
       name        = "storage",
-      server_type = "cpx41",
-      location    = "ash",
+      server_type = var.node_type,
+      location    = var.location,
       # Fully optional, just a demo.
       labels = [
         "node.kubernetes.io/server-usage=storage"
@@ -135,35 +135,35 @@ module "kube-hetzner" {
   
   # Add custom control plane configuration options here.
   # E.g to enable monitoring for etcd, proxy etc:
-  # control_planes_custom_config = {
-  #  etcd-expose-metrics = true,
-  #  kube-controller-manager-arg = "bind-address=0.0.0.0",
-  #  kube-proxy-arg ="metrics-bind-address=0.0.0.0",
-  #  kube-scheduler-arg = "bind-address=0.0.0.0",
-  # }
+   control_planes_custom_config = {
+    etcd-expose-metrics = true,
+    kube-controller-manager-arg = "bind-address=0.0.0.0",
+    kube-proxy-arg ="metrics-bind-address=0.0.0.0",
+    kube-scheduler-arg = "bind-address=0.0.0.0",
+  }
 
   # * LB location and type, the latter will depend on how much load you want it to handle, see https://www.hetzner.com/cloud/load-balancer
   load_balancer_type     = "lb11"
-  load_balancer_location = "fsn1"
+  load_balancer_location = var.location
 
   ### The following values are entirely optional (and can be removed from this if unused)
 
   # You can refine a base domain name to be use in this form of nodename.base_domain for setting the reserve dns inside Hetzner
-  # base_domain = "mycluster.example.com"
+   base_domain = "devops2go-k3s-lab.devops2go.io"
 
   # Cluster Autoscaler
   # Providing at least one map for the array enables the cluster autoscaler feature, default is disabled
   # Please note that the autoscaler should not be used with initial_k3s_channel < "v1.25". So ideally lock it to "v1.25".
   # * Example below:
-  # autoscaler_nodepools = [
-  #   {
-  #     name        = "autoscaler"
-  #     server_type = "cpx21" # must be same or better than the control_plane server type (regarding disk size)!
-  #     location    = "fsn1"
-  #     min_nodes   = 0
-  #     max_nodes   = 5
-  #   }
-  # ]
+  autoscaler_nodepools = [
+    {
+      name        = "autoscaler"
+      server_type = var.node_type # must be same or better than the control_plane server type (regarding disk size)!
+      location    = var.location
+      min_nodes   = 0
+      max_nodes   = 5
+    }
+  ]
 
   # Enable etcd snapshot backups to S3 storage.
   # Just provide a map with the needed settings (according to your S3 storage provider) and backups to S3 will
@@ -179,14 +179,14 @@ module "kube-hetzner" {
 
   # To use local storage on the nodes, you can enable Longhorn, default is "false".
   # See a full recap on how to configure agent nodepools for longhorn here https://github.com/kube-hetzner/terraform-hcloud-kube-hetzner/discussions/373#discussioncomment-3983159
-  # enable_longhorn = true
+   enable_longhorn = true
 
   # By default, longhorn is pulled from https://charts.longhorn.io.
   # If you need a version of longhorn which assures compatibility with rancher you can set this variable to https://charts.rancher.io. 
   # longhorn_repository = "https://charts.rancher.io"
 
   # The namespace for longhorn deployment, default is "longhorn-system".
-  # longhorn_namespace = "longhorn-system"
+   longhorn_namespace = "longhorn-system"
 
   # The file system type for Longhorn, if enabled (ext4 is the default, otherwise you can choose xfs).
   # longhorn_fstype = "xfs"
@@ -204,7 +204,7 @@ module "kube-hetzner" {
   # See the agent nodepool section for an example of how to do that.
 
   # To disable Hetzner CSI storage, you can set the following to "true", default is "false".
-  # disable_hetzner_csi = true
+   disable_hetzner_csi = true
 
   # If you want to use a specific Hetzner CCM and CSI version, set them below; otherwise, leave them as-is for the latest versions.
   # hetzner_ccm_version = ""
@@ -227,10 +227,10 @@ module "kube-hetzner" {
   # we allow you to add a traefik_values and nginx_values, see towards the end of this file in the advanced section.
   # After the cluster is deployed, you can always use HelmChartConfig definition to tweak the configuration.
   # If you want to disable both controllers set this to "none"
-  # ingress_controller = "nginx"
+   ingress_controller = "nginx"
 
   # You can change the number of replicas for selected ingress controller here. The default 0 means autoselecting based on number of agent nodes (1 node = 1 replica, 2 nodes = 2 replicas, 3+ nodes = 3 replicas)
-  # ingress_replica_count = 1
+   ingress_replica_count = 3
 
   # Use the klipperLB (similar to metalLB), instead of the default Hetzner one, that has an advantage of dropping the cost of the setup.
   # Automatically "true" in the case of single node cluster (as it does not make sense to use the Hetzner LB in that situation).
@@ -259,11 +259,11 @@ module "kube-hetzner" {
   # For production use, always use an HA setup with at least 3 control-plane nodes and 2 agents, and keep this on for maximum security.
 
   # The default is "true" (in HA setup i.e. at least 3 control plane nodes & 2 agents, just keep it enabled since it works flawlessly).
-  # automatically_upgrade_k3s = false
+   automatically_upgrade_k3s = false
 
   # The default is "true" (in HA setup it works wonderfully well, with automatic roll-back to the previous snapshot in case of an issue).
   # IMPORTANT! For non-HA clusters i.e. when the number of control-plane nodes is < 3, you have to turn it off.
-  # automatically_upgrade_os = false
+   automatically_upgrade_os = true
 
   # If you need more control over kured and the reboot behaviour, you can pass additional options to kured.
   # For example limiting reboots to certain timeframes. For all options see: https://kured.dev/docs/configuration/
@@ -280,10 +280,10 @@ module "kube-hetzner" {
   # ⚠️ If you are going to use Rancher addons for instance, it's always a good idea to fix the kube version to latest - 0.01,
   # at the time of writing the latest is v1.26, so setting the value below to "v1.25" will insure maximum compatibility with Rancher, Longhorn and so on!
   # The default is "v1.25".
-  # initial_k3s_channel = "stable"
+   /* initial_k3s_channel = "stable" */
 
   # The cluster name, by default "k3s"
-  # cluster_name = ""
+   cluster_name = var.cluster_name
 
   # Whether to use the cluster name in the node name, in the form of {cluster_name}-{nodepool_name}, the default is "true".
   # use_cluster_name_in_node_name = false
@@ -308,30 +308,30 @@ module "kube-hetzner" {
 
   # Adding extra firewall rules, like opening a port
   # More info on the format here https://registry.terraform.io/providers/hetznercloud/hcloud/latest/docs/resources/firewall
-  # extra_firewall_rules = [
+   extra_firewall_rules = [
   #   # For Postgres
-  #   {
-  #     direction       = "in"
-  #     protocol        = "tcp"
-  #     port            = "5432"
-  #     source_ips      = ["0.0.0.0/0", "::/0"]
-  #     destination_ips = [] # Won't be used for this rule
-  #   },
+     {
+       direction       = "in"
+       protocol        = "tcp"
+       port            = "5432"
+       source_ips      = ["0.0.0.0/0", "::/0"]
+       destination_ips = [] # Won't be used for this rule
+     },
   #   # To Allow ArgoCD access to resources via SSH
-  #   {
-  #     direction       = "out"
-  #     protocol        = "tcp"
-  #     port            = "22"
-  #     source_ips      = [] # Won't be used for this rule
-  #     destination_ips = ["0.0.0.0/0", "::/0"]
-  #   }
-  # ]
+     {
+       direction       = "out"
+       protocol        = "tcp"
+       port            = "22"
+       source_ips      = [] # Won't be used for this rule
+       destination_ips = ["0.0.0.0/0", "::/0"]
+     }
+   ]
 
   # If you want to configure a different CNI for k3s, use this flag
   # possible values: flannel (Default), calico, and cilium
   # As for Cilium, we allow infinite configurations via helm values, please check the CNI section of the readme over at https://github.com/kube-hetzner/terraform-hcloud-kube-hetzner/#cni.
   # Also, see the cilium_values at towards the end of this file, in the advanced section.
-  # cni_plugin = "cilium"
+   cni_plugin = "calico"
 
   # If you want to disable the k3s default network policy controller, use this flag!
   # Both Calico and Ciliun cni_plugin values override this value to true automatically, the default is "false".
@@ -345,7 +345,7 @@ module "kube-hetzner" {
   # block_icmp_ping_in = true
 
   # You can enable cert-manager (installed by Helm behind the scenes) with the following flag, the default is "false".
-  # enable_cert_manager = true
+   enable_cert_manager = true
 
   # By default a mirror is automatically chosen for you, but if you get a bad one (it rarely happens), you can set the one you want manually.
   # You can find a working mirror at https://download.opensuse.org/tumbleweed/appliances/openSUSE-MicroOS.x86_64-OpenStack-Cloud.qcow2.mirrorlist,
@@ -363,13 +363,13 @@ module "kube-hetzner" {
   # Let's say you are not using the control plane LB solution above, and still want to have one hostname point to all your control-plane nodes.
   # You could create multiple A records of to let's say cp.cluster.my.org pointing to all of your control-plane nodes ips.
   # In which case, you need to define that hostname in the k3s TLS-SANs config to allow connection through it. It can be hostnames or IP addresses.
-  # additional_tls_sans = ["cp.cluster.my.org"]
+   additional_tls_sans = ["k3s.devops2go.labs.devops2go.io"]
 
   # Oftentimes, you need to communicate to the cluster from inside the cluster itself, in which case it is important to set this value, as it will configure the hostname
   # at the load balancer level, and will save you from many slows downs when initiating communications from inside. Later on, you can point your DNS to the IP given
   # to the LB. And if you have other services pointing to it, you are also free to create CNAMES to point to it, or whatever you see fit.
   # If set, it will apply to either ingress controllers, Traefik or Ingress-Nginx.
-  # lb_hostname = ""
+   lb_hostname = ""
 
   # You can enable Rancher (installed by Helm behind the scenes) with the following flag, the default is "false".
   # When Rancher is enabled, it automatically installs cert-manager too, and it uses rancher's own self-signed certificates.
@@ -380,22 +380,22 @@ module "kube-hetzner" {
   # After the cluster is deployed, you can always use HelmChartConfig definition to tweak the configuration.
   # IMPORTANT: Rancher's install is quite memory intensive, you will require at least 4GB if RAM, meaning cx21 server type (for your control plane).
   # ALSO, in order for Rancher to successfully deploy, you have to set the "rancher_hostname".
-  # enable_rancher = true
+   enable_rancher = true
 
   # If using Rancher you can set the Rancher hostname, it must be unique hostname even if you do not use it.
   # If not pointing the DNS, you can just port-forward locally via kubectl to get access to the dashboard.
   # If you already set the lb_hostname above and are using a Hetzner LB, you do not need to set this one, as it will be used by default.
   # But if you set this one explicitly, it will have preference over the lb_hostname in rancher settings.
-  # rancher_hostname = "rancher.xyz.dev"
+   rancher_hostname = "rancher.devops2go."
 
   # When Rancher is deployed, by default is uses the "latest" channel. But this can be customized.
   # The allowed values are "stable" or "latest".
-  # rancher_install_channel = "stable"
+   rancher_install_channel = "latest"
 
   # Finally, you can specify a bootstrap-password for your rancher instance. Minimum 48 characters long!
   # If you leave empty, one will be generated for you.
   # (Can be used by another rancher2 provider to continue setup of rancher outside this module.)
-  # rancher_bootstrap_password = ""
+   rancher_bootstrap_password = "caniseloerosatO@ahahahagsgdsb3bsbvds23445tgdfdswfsfsf"
 
   # Separate from the above Rancher config (only use one or the other). You can import this cluster directly on an
   # an already active Rancher install. By clicking "import cluster" choosing "generic", giving it a name and pasting
@@ -405,7 +405,7 @@ module "kube-hetzner" {
   # rancher_registration_manifest_url = "https://rancher.xyz.dev/v3/import/xxxxxxxxxxxxxxxxxxYYYYYYYYYYYYYYYYYYYzzzzzzzzzzzzzzzzzzzzz.yaml"
 
   # Extra values that will be passed to the `extra-manifests/kustomization.yaml.tpl` if its present.
-  # extra_kustomize_parameters={}
+   extra_kustomize_parameters={}
 
   # It is best practice to turn this off, but for backwards compatibility it is set to "true" by default.
   # See https://github.com/kube-hetzner/terraform-hcloud-kube-hetzner/issues/349
@@ -434,25 +434,73 @@ kubeProxyReplacement: strict
 
   # Cert manager, all cert-manager helm values can be found at https://github.com/cert-manager/cert-manager/blob/master/deploy/charts/cert-manager/values.yaml
   # The following is an example, please note that the current indentation inside the EOT is important.
-  /*   cert_manager_values = <<EOT
+  cert_manager_values = <<EOT
 installCRDs: true
+namespace: "cert-manager"
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  # name: ""
+  # Optional additional annotations to add to the controller's ServiceAccount
+  # annotations: {}
+  # Automount API credentials for a Service Account.
+  # Optional additional labels to add to the controller's ServiceAccount
+  # labels: {}
+  automountServiceAccountToken: true
 replicaCount: 3
 webhook:
   replicaCount: 3
 cainjector:
   replicaCount: 3
-  EOT */
+  EOT
 
   # Longhorn, all Longhorn helm values can be found at https://github.com/longhorn/longhorn/blob/master/chart/values.yaml
   # The following is an example, please note that the current indentation inside the EOT is important.
-  /*   longhorn_values = <<EOT
+  longhorn_values = <<EOT
 defaultSettings:
   defaultDataPath: /var/longhorn
 persistence:
   defaultFsType: ext4
   defaultClassReplicaCount: 3
   defaultClass: true
-  EOT */
+ingress:
+  ## Set to true to enable ingress record generation
+  enabled: true
+
+  ## Add ingressClassName to the Ingress
+  ## Can replace the kubernetes.io/ingress.class annotation on v1.18+
+  # ingressClassName: ~
+
+  host: longhorn.devops2go.io
+
+  ## Set this to true in order to enable TLS on the ingress record
+  tls: true
+
+  ## Enable this in order to enable that the backend service will be connected at port 443
+  secureBackends: false
+
+  ## If TLS is set to true, you must declare what secret will store the key/certificate for TLS
+  tlsSecret: longhorn-ingress-tls
+
+  ## If ingress is enabled you can set the default ingress path
+  ## then you can access the UI by using the following full path {{host}}+{{path}}
+  path: /
+
+  ## Ingress annotations done as key:value pairs
+  ## If you're using kube-lego, you will want to add:
+  kubernetes.io/tls-acme: true
+  kubernetes.io/ingress.class: nginx
+  ##
+  ## For a full list of possible ingress annotations, please see
+  ## ref: https://github.com/kubernetes/ingress-nginx/blob/master/docs/annotations.md
+  ##
+  ## If tls is set to true, annotation ingress.kubernetes.io/secure-backends: "true" will automatically be set
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: true
+  EOT
 
   # Traefik, all Traefik helm values can be found at https://github.com/traefik/traefik-helm-chart/blob/master/traefik/values.yaml
   # The following is an example, please note that the current indentation inside the EOT is important.
@@ -497,34 +545,51 @@ ports:
   # Nginx, all Nginx helm values can be found at https://github.com/kubernetes/ingress-nginx/blob/main/charts/ingress-nginx/values.yaml
   # You can also have a look at https://kubernetes.github.io/ingress-nginx/, to understand how it works, and all the options at your disposal.
   # The following is an example, please note that the current indentation inside the EOT is important.
-    nginx_ingress_values = <<EOT
-controller:
-  watchIngressWithoutClass: "true"
-  kind: "DaemonSet"
-  config:
-    "use-forwarded-headers": "true"
-    "compute-full-forwarded-for": "true"
-    "use-proxy-protocol": "true"
-  service:
-    annotations:
-      "load-balancer.hetzner.cloud/name": "k3s"
-      "load-balancer.hetzner.cloud/use-private-ip": "true"
-      "load-balancer.hetzner.cloud/disable-private-ingress": "true"
-      "load-balancer.hetzner.cloud/location": "nbg1"
-      "load-balancer.hetzner.cloud/type": "lb11"
-      "load-balancer.hetzner.cloud/uses-proxyprotocol": "true"
+  nginx_ingress_values = <<EOT
+    controller:
+    watchIngressWithoutClass: "true"
+    kind: "DaemonSet"
+    config:
+        "use-forwarded-headers": "true"
+        "compute-full-forwarded-for": "true"
+        "use-proxy-protocol": "true"
+    service:
+        annotations:
+            "load-balancer.hetzner.cloud/name": "devops2go-k3s-lab"
+            "load-balancer.hetzner.cloud/use-private-ip": "true"
+            "load-balancer.hetzner.cloud/disable-private-ingress": "true"
+            "load-balancer.hetzner.cloud/location": "ash"
+            "load-balancer.hetzner.cloud/type": "lb11"
+            "load-balancer.hetzner.cloud/uses-proxyprotocol": "true"
   EOT
 
   # Rancher, all Rancher helm values can be found at https://rancher.com/docs/rancher/v2.5/en/installation/install-rancher-on-k8s/chart-options/
   # The following is an example, please note that the current indentation inside the EOT is important.
-    rancher_values = <<EOT
+  rancher_values = <<EOT
 ingress:
+  # If set to false, ingress will not be created
+  # Defaults to true
+  # options: true, false
+  enabled: true
+  includeDefaultExtraAnnotations: true
+  extraAnnotations: {}
+  ingressClassName: "nginx"
   tls:
-    source: "rancher"
-hostname: "rancher.example.com"
-replicas: 1
-bootstrapPassword: "supermario"
-  EOT
+    source: rancher
+    secretName: tls-rancher-ingress
+hostname: "rancher.devops2go.io"
+replicas: 3
+bootstrapPassword: "loverosatanO@1"
+letsEncrypt:
+  # email: donydonald1@icloud.com
+  environment: production
+  ingress:
+    # options: traefik, nginx
+    class: "nginx"
+# If you are using certs signed by a private CA set to 'true' and set the 'tls-ca'
+# in the 'rancher-system' namespace. See the README.md for details
+privateCA: false
+EOT
 
 }
 
