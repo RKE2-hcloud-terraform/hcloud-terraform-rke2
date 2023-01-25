@@ -174,7 +174,7 @@ module "kube-hetzner" {
   #   etcd-s3-endpoint        = "xxxx.r2.cloudflarestorage.com"
   #   etcd-s3-access-key      = "<access-key>"
   #   etcd-s3-secret-key      = "<secret-key>"
-  #   etcd-s3-bucket          = "k3s-etcd-snapshots"
+  #   etcd-s3-bucket          = "devops2go-k3s-lab"
   # }
 
   # To use local storage on the nodes, you can enable Longhorn, default is "false".
@@ -241,7 +241,7 @@ module "kube-hetzner" {
   # If you want to configure additional arguments for traefik, enter them here as a list and in the form of traefik CLI arguments; see https://doc.traefik.io/traefik/reference/static-configuration/cli/
   # They are the options that go into the additionalArguments section of the Traefik helm values file.
   # Example: traefik_additional_options = ["--log.level=DEBUG", "--tracing=true"]
-  # traefik_additional_options = []
+   /* traefik_additional_options = [] */
 
   # By default traefik is configured to redirect http traffic to https, you can set this to "false" to disable the redirection.
   # traefik_redirect_to_https = false
@@ -358,7 +358,7 @@ module "kube-hetzner" {
 
   # When this is enabled, rather than the first node, all external traffic will be routed via a control-plane loadbalancer, allowing for high availability.
   # The default is false.
-  # use_control_plane_lb = true
+   use_control_plane_lb = true
 
   # Let's say you are not using the control plane LB solution above, and still want to have one hostname point to all your control-plane nodes.
   # You could create multiple A records of to let's say cp.cluster.my.org pointing to all of your control-plane nodes ips.
@@ -386,7 +386,7 @@ module "kube-hetzner" {
   # If not pointing the DNS, you can just port-forward locally via kubectl to get access to the dashboard.
   # If you already set the lb_hostname above and are using a Hetzner LB, you do not need to set this one, as it will be used by default.
   # But if you set this one explicitly, it will have preference over the lb_hostname in rancher settings.
-   rancher_hostname = "rancher.devops2go."
+   rancher_hostname = "rancher.devops2go.io"
 
   # When Rancher is deployed, by default is uses the "latest" channel. But this can be customized.
   # The allowed values are "stable" or "latest".
@@ -545,7 +545,7 @@ ports:
   # Nginx, all Nginx helm values can be found at https://github.com/kubernetes/ingress-nginx/blob/main/charts/ingress-nginx/values.yaml
   # You can also have a look at https://kubernetes.github.io/ingress-nginx/, to understand how it works, and all the options at your disposal.
   # The following is an example, please note that the current indentation inside the EOT is important.
-  nginx_ingress_values = <<EOT
+  nginx_values = <<EOT
     controller:
     watchIngressWithoutClass: "true"
     kind: "DaemonSet"
@@ -589,7 +589,7 @@ letsEncrypt:
 # If you are using certs signed by a private CA set to 'true' and set the 'tls-ca'
 # in the 'rancher-system' namespace. See the README.md for details
 privateCA: false
-EOT
+  EOT
 
 }
 
