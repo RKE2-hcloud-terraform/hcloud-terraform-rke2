@@ -23,7 +23,6 @@ jobs:
       - name: Terraform Init
         id: init
         run: |
-            rm -rf .terraform
             terraform init
         working-directory: "./hcloud-terraform-rke2"
 
