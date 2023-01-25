@@ -1,4 +1,4 @@
-
+hcloud_token = ""
 network_region = "us-east"
 location = "ash"
 cluster_name = "devops2go-k3s-lab"
