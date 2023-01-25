@@ -1,73 +1,131 @@
-
-
-name: 'Terraform'
+name: 'Terraform - Staging'
 
 on:
   push:
-    branches: [ "main" ]
-    paths:
-      -  hcloud-terraform-rke2/k3s-kube/** 
+    branches:
+    - main
+    paths: 
+    - staging/**
   pull_request:
+    branches:
+    - main
+    paths: 
+    - hcloud-terraform-rke2/k3s-kube/**
+
 permissions:
   contents: read
   pull-requests: write
 
-jobs:
+jobs: 
   terraform:
-    name: 'Terraform'
     runs-on: ubuntu-latest
-    environment: production
-
-    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
-    defaults:
-      run:
-        shell: bash
-
+    name: Terraform
+    environment: staging 
     steps:
-    # Checkout the repository to the GitHub Actions runner
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        repository : https://github.com/RKE2-hcloud-terraform/hcloud-terraform-rke2.git
-
-    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
-      env:
-        HCLOUD_TOKEN: ${{ secrets.TF_HCLOUD_TOKEN }}
-      
+      with:
+        terraform_version: 1.1.9
+        terraform_wrapper: false
 
-    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
+      id: init
       run: terraform init
-      # with:
-      #   path: /k3s-kube
       env:
-        HCLOUD_TOKEN: ${{ secrets.TF_HCLOUD_TOKEN }}
-      working-directory: ./k3s-kube
+        HCLOUD_TOKEN: ${{ secrets.TF_HCLOUD_API_TOKEN }}
+      working-directory: ./hcloud-terraform-rke2/k3s-kube # Use your environment folder
+      shell: bash
 
-
-
-    # Checks that all Terraform configuration files adhere to a canonical format
-    - name: Terraform Format
-      run: terraform fmt -check
-
-    # Generates an execution plan for Terraform
     - name: Terraform Plan
-      run: terraform plan -input=false
+      id: plan
+      run: |
+        terraform plan -input=false -no-color -out tf.plan
       env:
         HCLOUD_TOKEN: ${{ secrets.TF_HCLOUD_TOKEN }}
-        
-        # hcloud_token: ${{ secrets.TF_HCLOUD_API_TOKEN }}
+      working-directory: ./hcloud-terraform-rke2/k3s-kube # Use your environment folder
+      shell: bash
 
-      # On push to "main", build or change infrastructure according to Terraform configuration files
-      # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
-    - name: Terraform Apply
-      if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
-      run: terraform apply -auto-approve -input=false
-      # with:
-      #   path: /k3s-kube
+
+    - name: Terraform Show
+      id: show
+      run: terraform show -no-color tf.plan 2>&1 > /tmp/plan.txt
+      working-directory: ./staging # Use your environment folder
       env:
-        HCLOUD_TOKEN: ${{ secrets.TF_HCLOUD_TOKEN }}
-      working-directory: ./RKE2-hcloud-terraform/hcloud-terraform-rke2/k3s-kube
+        HCLOUD_TOKEN: ${{ secrets.TF_HCLOUD_API_TOKEN }}
+      shell: bash
+    - uses: actions/github-script@v6
+      if: github.event_name == 'pull_request'
+      with:
+        github-token: ${{ inputs.GITHUB_TOKEN }}
+        script: |
+          const fs = require("fs");
+          const plan = fs.readFileSync("/tmp/plan.txt", "utf8");
+          const maxGitHubBodyCharacters = 65536;
+
+          function chunkSubstr(str, size) {
+            const numChunks = Math.ceil(str.length / size)
+            const chunks = new Array(numChunks)
+            for (let i = 0, o = 0; i < numChunks; ++i, o += size) {
+              chunks[i] = str.substr(o, size)
+            }
+            return chunks
+          }
+
+          // Split the Terraform plan into chunks if it's too big and can't fit into the GitHub Action
+          var plans = chunkSubstr(plan, maxGitHubBodyCharacters); 
+          for (let i = 0; i < plans.length; i++) {
+            const output = `### ${{ inputs.plan-title }} Part # ${i + 1}
+            #### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+            #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+            <details><summary>Show Plan</summary>
+            \`\`\`\n
+            ${plans[i]}
+            \`\`\`
+            </details>
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ inputs.working-directory }}\`, Workflow: \`${{ github.workflow }}\`*`;   
+
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+          }
+
+    - name: Terraform Apply
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: terraform apply -input=false tf.plan
+      env:
+        HCLOUD_TOKEN: ${{ secrets.TF_HCLOUD_API_TOKEN }}
+      working-directory: ./hcloud-terraform-rke2/k3s-kube # Use your environment folder
+      shell: bash
+
+    #     HCLOUD_TOKEN: ${{ secrets.TF_HCLOUD_TOKEN }}
+    #   working-directory: ./k3s-kube
+
+
+
+    # # Checks that all Terraform configuration files adhere to a canonical format
+    # - name: Terraform Format
+    #   run: terraform fmt -check
+
+    # # Generates an execution plan for Terraform
+    # - name: Terraform Plan
+    #   run: terraform plan -input=false
+    #   env:
+    #     HCLOUD_TOKEN: ${{ secrets.TF_HCLOUD_TOKEN }}
+        
+    #     # hcloud_token: ${{ secrets.TF_HCLOUD_API_TOKEN }}
+
+    #   # On push to "main", build or change infrastructure according to Terraform configuration files
+    #   # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
+    # - name: Terraform Apply
+    #   if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
+    #   run: terraform apply -auto-approve -input=false
+    #   # with:
+    #   #   path: /k3s-kube
+    #   env:
+    #     HCLOUD_TOKEN: ${{ secrets.TF_HCLOUD_TOKEN }}
+    #   working-directory: ./RKE2-hcloud-terraform/hcloud-terraform-rke2/k3s-kube
 
