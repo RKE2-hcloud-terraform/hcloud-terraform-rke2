@@ -72,6 +72,9 @@ jobs:
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
+      env:
+        HCLOUD_TOKEN: ${{ secrets.TF_HCLOUD_TOKEN }}
+        working-directory: ./hcloud-terraform-k3s
       # with:
       #   cli_config_credentials_token: ${{ secrets.TF_HCLOUD_API_TOKEN }}
 
