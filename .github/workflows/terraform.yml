@@ -68,10 +68,10 @@ jobs:
         if: github.event_name == 'push'
         run: terraform plan -no-color
         env:
-          TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
+          TF_VAR_hcloud_token: ${{ env.HCLOUD_TOKEN }}
           hcloud-token: ${{ secrets.HCLOUD_TOKEN }}
-          HCLOUD_TOKEN: ${{ variables.HCLOUD_TOKEN }}
-
+          HCLOUD_TOKEN: ${{ env.HCLOUD_TOKEN }}
+          env_var: ${{ vars.HCLOUD_TOKEN }}
         working-directory: "./k3s-kube/"
 
       - name: Terraform Apply
