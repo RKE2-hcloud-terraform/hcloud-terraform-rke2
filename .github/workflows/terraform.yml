@@ -11,7 +11,7 @@ jobs:
     name: "Terraform"
     runs-on: ubuntu-latest
     env:
-         HCLOUD_TOKEN: ${{ secrets.TF_HCLOUD_API_TOKEN }}
+         HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
 
     steps:
       - name: Checkout
@@ -41,6 +41,7 @@ jobs:
           TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
           HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
 
+
       - name: Terraform Init
         id: init
         run: |
@@ -69,6 +70,8 @@ jobs:
         env:
           TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
           hcloud-token: ${{ secrets.HCLOUD_TOKEN }}
+          HCLOUD_TOKEN: ${{ variables.HCLOUD_TOKEN }}
+
         working-directory: "./k3s-kube/"
 
       - name: Terraform Apply
@@ -76,4 +79,6 @@ jobs:
         run: terraform apply -auto-approve
         env:
           TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
+          hcloud-token: ${{ secrets.HCLOUD_TOKEN }}
+          HCLOUD_TOKEN: ${{ variables.HCLOUD_TOKEN }}
         working-directory: "./k3s-kube/"
