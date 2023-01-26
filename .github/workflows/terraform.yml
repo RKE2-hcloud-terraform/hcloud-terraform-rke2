@@ -78,7 +78,6 @@ jobs:
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve
         env:
-          TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
-          hcloud-token: ${{ secrets.HCLOUD_TOKEN }}
-          HCLOUD_TOKEN: ${{ vars.HCLOUD_TOKEN }}
+          HCLOUD_TOKEN: ${{secrets.HCLOUD_TOKEN }}
+          TF_LOG: INFO
         working-directory: "./k3s-kube/"
