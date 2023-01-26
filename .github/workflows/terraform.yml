@@ -16,6 +16,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Terraform state
+        uses: hashicorp/terraform-github-actions/init@v0.4.0
+        with:
+            encryptionkey: ${{ secrets.encryptionkey }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
@@ -78,6 +82,7 @@ jobs:
         id: plan
         if: github.event_name == 'push'
         run: terraform plan -no-color
+
         env:
           HCLOUD_TOKEN: ${{secrets.HCLOUD_TOKEN }}
           TF_VAR_allowed_account_id: ${{secrets.HCLOUD_TOKEN }}
@@ -87,8 +92,10 @@ jobs:
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform destroy -auto-approve
+        run: terraform apply -auto-approve
         env:
           HCLOUD_TOKEN: ${{secrets.HCLOUD_TOKEN }}
 
-        working-directory: "./k3s-kube/"
+
+
+
