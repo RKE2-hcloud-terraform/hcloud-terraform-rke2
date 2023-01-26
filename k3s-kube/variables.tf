@@ -46,19 +46,19 @@ variable "location_eu2" {
 }
 
 variable "images" {
-  type = string
-  default = ""
+  type        = string
+  default     = ""
   description = "hcloud images"
 }
 
 variable "control_plane_server_type" {
-  type = string
-  default = ""
+  type        = string
+  default     = ""
   description = "hcloud control plane server type"
 }
 
 variable "node_type" {
-  type = string
-  default = ""
+  type        = string
+  default     = ""
   description = "hcloud node type"
 }

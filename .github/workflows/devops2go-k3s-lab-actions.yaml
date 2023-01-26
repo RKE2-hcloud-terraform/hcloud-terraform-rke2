@@ -53,12 +53,12 @@ jobs:
             IdentityFile ~/.ssh/staging.key
             StrictHostKeyChecking no
           END
-        # env:
-        #   SSH_USER: ${{ secrets.STAGING_SSH_USER }}
-        #   SSH_KEY: ${{ secrets.STAGING_SSH_KEY }}
-        #   SSH_HOST: ${{ secrets.STAGING_SSH_HOST }}
-        #   TF_VAR_hcloud_token: ${{ vars.HCLOUD_TOKEN }}
-        #   HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
+        env:
+          SSH_USER: ${{ secrets.STAGING_SSH_USER }}
+          SSH_KEY: ${{ secrets.STAGING_SSH_KEY }}
+          SSH_HOST: ${{ secrets.STAGING_SSH_HOST }}
+          TF_VAR_hcloud_token: ${{ vars.HCLOUD_TOKEN }}
+          HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
 
       - name: Terraform Init
         id: init

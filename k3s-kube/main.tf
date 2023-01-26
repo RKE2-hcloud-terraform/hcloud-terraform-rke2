@@ -132,14 +132,14 @@ module "kube-hetzner" {
       longhorn_volume_size = 180
     }
   ]
-  
+
   # Add custom control plane configuration options here.
   # E.g to enable monitoring for etcd, proxy etc:
-   control_planes_custom_config = {
-    etcd-expose-metrics = true,
+  control_planes_custom_config = {
+    etcd-expose-metrics         = true,
     kube-controller-manager-arg = "bind-address=0.0.0.0",
-    kube-proxy-arg ="metrics-bind-address=0.0.0.0",
-    kube-scheduler-arg = "bind-address=0.0.0.0",
+    kube-proxy-arg              = "metrics-bind-address=0.0.0.0",
+    kube-scheduler-arg          = "bind-address=0.0.0.0",
   }
 
   # * LB location and type, the latter will depend on how much load you want it to handle, see https://www.hetzner.com/cloud/load-balancer
@@ -149,7 +149,7 @@ module "kube-hetzner" {
   ### The following values are entirely optional (and can be removed from this if unused)
 
   # You can refine a base domain name to be use in this form of nodename.base_domain for setting the reserve dns inside Hetzner
-   base_domain = "devops2go-k3s-lab.devops2go.io"
+  base_domain = "devops2go-k3s-lab.devops2go.io"
 
   # Cluster Autoscaler
   # Providing at least one map for the array enables the cluster autoscaler feature, default is disabled
@@ -179,14 +179,14 @@ module "kube-hetzner" {
 
   # To use local storage on the nodes, you can enable Longhorn, default is "false".
   # See a full recap on how to configure agent nodepools for longhorn here https://github.com/kube-hetzner/terraform-hcloud-kube-hetzner/discussions/373#discussioncomment-3983159
-   enable_longhorn = true
+  enable_longhorn = true
 
   # By default, longhorn is pulled from https://charts.longhorn.io.
   # If you need a version of longhorn which assures compatibility with rancher you can set this variable to https://charts.rancher.io. 
   # longhorn_repository = "https://charts.rancher.io"
 
   # The namespace for longhorn deployment, default is "longhorn-system".
-   longhorn_namespace = "longhorn-system"
+  longhorn_namespace = "longhorn-system"
 
   # The file system type for Longhorn, if enabled (ext4 is the default, otherwise you can choose xfs).
   # longhorn_fstype = "xfs"
@@ -204,7 +204,7 @@ module "kube-hetzner" {
   # See the agent nodepool section for an example of how to do that.
 
   # To disable Hetzner CSI storage, you can set the following to "true", default is "false".
-   disable_hetzner_csi = true
+  disable_hetzner_csi = true
 
   # If you want to use a specific Hetzner CCM and CSI version, set them below; otherwise, leave them as-is for the latest versions.
   # hetzner_ccm_version = ""
@@ -227,10 +227,10 @@ module "kube-hetzner" {
   # we allow you to add a traefik_values and nginx_values, see towards the end of this file in the advanced section.
   # After the cluster is deployed, you can always use HelmChartConfig definition to tweak the configuration.
   # If you want to disable both controllers set this to "none"
-   ingress_controller = "nginx"
+  ingress_controller = "nginx"
 
   # You can change the number of replicas for selected ingress controller here. The default 0 means autoselecting based on number of agent nodes (1 node = 1 replica, 2 nodes = 2 replicas, 3+ nodes = 3 replicas)
-   ingress_replica_count = 3
+  ingress_replica_count = 3
 
   # Use the klipperLB (similar to metalLB), instead of the default Hetzner one, that has an advantage of dropping the cost of the setup.
   # Automatically "true" in the case of single node cluster (as it does not make sense to use the Hetzner LB in that situation).
@@ -241,7 +241,7 @@ module "kube-hetzner" {
   # If you want to configure additional arguments for traefik, enter them here as a list and in the form of traefik CLI arguments; see https://doc.traefik.io/traefik/reference/static-configuration/cli/
   # They are the options that go into the additionalArguments section of the Traefik helm values file.
   # Example: traefik_additional_options = ["--log.level=DEBUG", "--tracing=true"]
-   /* traefik_additional_options = [] */
+  /* traefik_additional_options = [] */
 
   # By default traefik is configured to redirect http traffic to https, you can set this to "false" to disable the redirection.
   # traefik_redirect_to_https = false
@@ -259,11 +259,11 @@ module "kube-hetzner" {
   # For production use, always use an HA setup with at least 3 control-plane nodes and 2 agents, and keep this on for maximum security.
 
   # The default is "true" (in HA setup i.e. at least 3 control plane nodes & 2 agents, just keep it enabled since it works flawlessly).
-   automatically_upgrade_k3s = false
+  automatically_upgrade_k3s = false
 
   # The default is "true" (in HA setup it works wonderfully well, with automatic roll-back to the previous snapshot in case of an issue).
   # IMPORTANT! For non-HA clusters i.e. when the number of control-plane nodes is < 3, you have to turn it off.
-   automatically_upgrade_os = true
+  automatically_upgrade_os = true
 
   # If you need more control over kured and the reboot behaviour, you can pass additional options to kured.
   # For example limiting reboots to certain timeframes. For all options see: https://kured.dev/docs/configuration/
@@ -280,10 +280,10 @@ module "kube-hetzner" {
   # ⚠️ If you are going to use Rancher addons for instance, it's always a good idea to fix the kube version to latest - 0.01,
   # at the time of writing the latest is v1.26, so setting the value below to "v1.25" will insure maximum compatibility with Rancher, Longhorn and so on!
   # The default is "v1.25".
-   /* initial_k3s_channel = "stable" */
+  /* initial_k3s_channel = "stable" */
 
   # The cluster name, by default "k3s"
-   cluster_name = var.cluster_name
+  cluster_name = var.cluster_name
 
   # Whether to use the cluster name in the node name, in the form of {cluster_name}-{nodepool_name}, the default is "true".
   # use_cluster_name_in_node_name = false
@@ -308,30 +308,30 @@ module "kube-hetzner" {
 
   # Adding extra firewall rules, like opening a port
   # More info on the format here https://registry.terraform.io/providers/hetznercloud/hcloud/latest/docs/resources/firewall
-   extra_firewall_rules = [
-  #   # For Postgres
-     {
-       direction       = "in"
-       protocol        = "tcp"
-       port            = "5432"
-       source_ips      = ["0.0.0.0/0", "::/0"]
-       destination_ips = [] # Won't be used for this rule
-     },
-  #   # To Allow ArgoCD access to resources via SSH
-     {
-       direction       = "out"
-       protocol        = "tcp"
-       port            = "22"
-       source_ips      = [] # Won't be used for this rule
-       destination_ips = ["0.0.0.0/0", "::/0"]
-     }
-   ]
+  extra_firewall_rules = [
+    #   # For Postgres
+    {
+      direction       = "in"
+      protocol        = "tcp"
+      port            = "5432"
+      source_ips      = ["0.0.0.0/0", "::/0"]
+      destination_ips = [] # Won't be used for this rule
+    },
+    #   # To Allow ArgoCD access to resources via SSH
+    {
+      direction       = "out"
+      protocol        = "tcp"
+      port            = "22"
+      source_ips      = [] # Won't be used for this rule
+      destination_ips = ["0.0.0.0/0", "::/0"]
+    }
+  ]
 
   # If you want to configure a different CNI for k3s, use this flag
   # possible values: flannel (Default), calico, and cilium
   # As for Cilium, we allow infinite configurations via helm values, please check the CNI section of the readme over at https://github.com/kube-hetzner/terraform-hcloud-kube-hetzner/#cni.
   # Also, see the cilium_values at towards the end of this file, in the advanced section.
-   cni_plugin = "calico"
+  cni_plugin = "calico"
 
   # If you want to disable the k3s default network policy controller, use this flag!
   # Both Calico and Ciliun cni_plugin values override this value to true automatically, the default is "false".
@@ -345,7 +345,7 @@ module "kube-hetzner" {
   # block_icmp_ping_in = true
 
   # You can enable cert-manager (installed by Helm behind the scenes) with the following flag, the default is "false".
-   enable_cert_manager = true
+  enable_cert_manager = true
 
   # By default a mirror is automatically chosen for you, but if you get a bad one (it rarely happens), you can set the one you want manually.
   # You can find a working mirror at https://download.opensuse.org/tumbleweed/appliances/openSUSE-MicroOS.x86_64-OpenStack-Cloud.qcow2.mirrorlist,
@@ -358,18 +358,18 @@ module "kube-hetzner" {
 
   # When this is enabled, rather than the first node, all external traffic will be routed via a control-plane loadbalancer, allowing for high availability.
   # The default is false.
-   use_control_plane_lb = true
+  use_control_plane_lb = true
 
   # Let's say you are not using the control plane LB solution above, and still want to have one hostname point to all your control-plane nodes.
   # You could create multiple A records of to let's say cp.cluster.my.org pointing to all of your control-plane nodes ips.
   # In which case, you need to define that hostname in the k3s TLS-SANs config to allow connection through it. It can be hostnames or IP addresses.
-   additional_tls_sans = ["k3s.devops2go.labs.devops2go.io"]
+  additional_tls_sans = ["k3s.devops2go.labs.devops2go.io"]
 
   # Oftentimes, you need to communicate to the cluster from inside the cluster itself, in which case it is important to set this value, as it will configure the hostname
   # at the load balancer level, and will save you from many slows downs when initiating communications from inside. Later on, you can point your DNS to the IP given
   # to the LB. And if you have other services pointing to it, you are also free to create CNAMES to point to it, or whatever you see fit.
   # If set, it will apply to either ingress controllers, Traefik or Ingress-Nginx.
-   lb_hostname = ""
+  lb_hostname = ""
 
   # You can enable Rancher (installed by Helm behind the scenes) with the following flag, the default is "false".
   # When Rancher is enabled, it automatically installs cert-manager too, and it uses rancher's own self-signed certificates.
@@ -380,22 +380,22 @@ module "kube-hetzner" {
   # After the cluster is deployed, you can always use HelmChartConfig definition to tweak the configuration.
   # IMPORTANT: Rancher's install is quite memory intensive, you will require at least 4GB if RAM, meaning cx21 server type (for your control plane).
   # ALSO, in order for Rancher to successfully deploy, you have to set the "rancher_hostname".
-   enable_rancher = true
+  enable_rancher = true
 
   # If using Rancher you can set the Rancher hostname, it must be unique hostname even if you do not use it.
   # If not pointing the DNS, you can just port-forward locally via kubectl to get access to the dashboard.
   # If you already set the lb_hostname above and are using a Hetzner LB, you do not need to set this one, as it will be used by default.
   # But if you set this one explicitly, it will have preference over the lb_hostname in rancher settings.
-   rancher_hostname = "rancher.devops2go.io"
+  rancher_hostname = "rancher.devops2go.io"
 
   # When Rancher is deployed, by default is uses the "latest" channel. But this can be customized.
   # The allowed values are "stable" or "latest".
-   rancher_install_channel = "latest"
+  rancher_install_channel = "latest"
 
   # Finally, you can specify a bootstrap-password for your rancher instance. Minimum 48 characters long!
   # If you leave empty, one will be generated for you.
   # (Can be used by another rancher2 provider to continue setup of rancher outside this module.)
-   rancher_bootstrap_password = "caniseloerosatO@ahahahagsgdsb3bsbvds23445tgdfdswfsfsf"
+  rancher_bootstrap_password = "caniseloerosatO@ahahahagsgdsb3bsbvds23445tgdfdswfsfsf"
 
   # Separate from the above Rancher config (only use one or the other). You can import this cluster directly on an
   # an already active Rancher install. By clicking "import cluster" choosing "generic", giving it a name and pasting
@@ -405,7 +405,7 @@ module "kube-hetzner" {
   # rancher_registration_manifest_url = "https://rancher.xyz.dev/v3/import/xxxxxxxxxxxxxxxxxxYYYYYYYYYYYYYYYYYYYzzzzzzzzzzzzzzzzzzzzz.yaml"
 
   # Extra values that will be passed to the `extra-manifests/kustomization.yaml.tpl` if its present.
-   extra_kustomize_parameters={}
+  extra_kustomize_parameters = {}
 
   # It is best practice to turn this off, but for backwards compatibility it is set to "true" by default.
   # See https://github.com/kube-hetzner/terraform-hcloud-kube-hetzner/issues/349
