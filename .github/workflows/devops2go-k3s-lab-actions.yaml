@@ -42,8 +42,9 @@ jobs:
           echo ${HCLOUD_TOKEN}
           echo ${SSH_ID_RSA_PRIVATE}
           echo ${SSH_ID_RSA_PUBLIC}
-          echo ${SSH_ID_RSA_PRIVATE} > ~/.ssh/id_rsa
-          echo ${SSH_ID_RSA_PUBLIC} > ~/.ssh/id_rsa.pub
+          echo ${SSH_ID_RSA_PRIVATE} >> ~/.ssh/id_rsa
+          echo ${SSH_ID_RSA_PUBLIC} >> ~/.ssh/id_rsa.pub
+          ls -1 ~/.ssh/
           cat ~/.ssh/id_rsa
           cat ~/.ssh/id_rsa.pub
           Host production
