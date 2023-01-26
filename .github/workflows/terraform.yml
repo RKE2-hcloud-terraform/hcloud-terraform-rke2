@@ -52,7 +52,7 @@ jobs:
         uses: hashicorp/terraform-github-actions/init@v0.4.0
         env:
           TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
-          TF_LOG: INFO
+
         
       - name: Set up secret file
         env:
@@ -82,7 +82,7 @@ jobs:
           HCLOUD_TOKEN: ${{secrets.HCLOUD_TOKEN }}
           TF_VAR_allowed_account_id: ${{secrets.HCLOUD_TOKEN }}
           TF_VAR_hcloud_token: "${{secrets.HCLOUD_TOKEN }}"
-          TF_LOG: INFO
+
         working-directory: "./k3s-kube/"
 
       - name: Terraform Apply
@@ -90,5 +90,5 @@ jobs:
         run: terraform apply -auto-approve
         env:
           HCLOUD_TOKEN: ${{secrets.HCLOUD_TOKEN }}
-          TF_LOG: INFO
+
         working-directory: "./k3s-kube/"
