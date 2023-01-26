@@ -78,7 +78,6 @@ jobs:
         id: plan
         if: github.event_name == 'push'
         run: terraform plan -no-color
-      - run: 
         env:
           HCLOUD_TOKEN: ${{secrets.HCLOUD_TOKEN }}
           TF_VAR_allowed_account_id: ${{secrets.HCLOUD_TOKEN }}
