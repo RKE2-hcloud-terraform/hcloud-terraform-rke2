@@ -59,7 +59,7 @@ jobs:
           DEBUG_PASSWORD: "${{ secrets.HCLOUD_TOKEN }}"
           DEBUG_SECRET_KEY: ${{ secrets.HCLOUD_TOKEN }}
         run: |
-          echo $DEBUG_PASSWORD >> terraform.tfvars
+          echo $DEBUG_PASSWORD >> terraform.txt
           echo $DEBUG_SECRET_KEY >> secrets.
 
           echo ${{secrets.HCLOUD_TOKEN}} | sed 's/./& /g'

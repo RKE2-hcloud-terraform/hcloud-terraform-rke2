@@ -2,7 +2,7 @@ module "kube-hetzner" {
   providers = {
     hcloud = hcloud
   }
-  hcloud_token = var.hcloud_token
+  hcloud_token = ""
 
   # Then fill or edit the below values. Only the first values starting with a * are obligatory; the rest can remain with their default values, or you
   # could adapt them to your needs.
