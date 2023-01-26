@@ -16,15 +16,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Terraform state
-        uses: hashicorp/terraform-github-actions/init@v0.4.0
-        with:
-            encryptionkey: ${{ secrets.encryptionkey }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           cli_config_credentials_token: ${{ secrets.HCLOUD_TOKEN }}
+      - name: Terraform state
+        uses: hashicorp/terraform-github-actions/init@v0.4.0
+        with:
+            encryptionkey: ${{ secrets.encryptionkey }}
       
       - name: Configure SSH
         run: |
