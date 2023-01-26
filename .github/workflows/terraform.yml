@@ -64,13 +64,24 @@ jobs:
         uses: hashicorp/terraform-github-actions/fmt@v0.3.7
         continue-on-error: true
 
-
+      - name: Put Plan in Env Var
+        run: |
+          PLAN=$(cat plan.txt)
+          echo "PLAN<<EOF" >> $GITHUB_ENV
+          echo "$PLAN" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+          
       - name: Terraform Plan
         id: plan
         if: github.event_name == 'push'
-        run: terraform plan -no-color 
+        run: terraform plan -no-color
+           
+      - run:  echo ${{ steps.plan.outputs.stdout }}
+      - run: echo ${{ steps.plan.outputs.stderr }}
+      - run: echo ${{ steps.plan.outputs.exitcode }}
         env:
           HCLOUD_TOKEN: ${{secrets.HCLOUD_TOKEN }}
+          TF_VAR_allowed_account_id: ${{secrets.HCLOUD_TOKEN }}
           TF_LOG: INFO
         working-directory: "./k3s-kube/"
 
