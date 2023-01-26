@@ -85,9 +85,10 @@ jobs:
         env:
           HCLOUD_TOKEN: ${{secrets.HCLOUD_TOKEN }}
         working-directory: "./k3s-kube/"
-      - uses: hashicorp/terraform-github-actions/init@v0.4.0 
-        with:
-          encryptionkey: ${{ secrets.encryptionkey }}
+
+
+
+
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'

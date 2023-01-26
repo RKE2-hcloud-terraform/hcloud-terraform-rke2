@@ -1,0 +1,131 @@
+name: "Devops2go K3S Labs Actions"
+
+on:
+  push:
+    branches:
+      - main
+env:
+  TF_LOG: INFO
+  HCLOUD_TOKEN: ${{secrets.HCLOUD_TOKEN}}
+  SSH_ID_RSA_PRIVATE: ${{secrets.SSH_ID_RSA_PRIVATE}}
+  SSH_ID_RSA_PUBLIC: ${{secrets.SSH_ID_RSA_PUBLIC}}
+  
+
+jobs:
+  terraform:
+    name: "Terraform Setup"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: "./k3s-kube"
+    env: 
+      HCLOUD_TOKEN: ${{secrets.HCLOUD_TOKEN}}
+    
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+      
+      - name: Terraform Installation
+        uses: hashicorp/setup-terraform@v2
+      
+      - name: Hcloud Installation
+        uses: 3bit/setup-hcloud@v2
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh/
+          ssh-keygen -q -t rsa -N '' -f ~/.ssh/id_rsa <<<y >/dev/null 2>&1
+          echo "$SSH_KEY" > ~/.ssh/staging.key
+          chmod 600 ~/.ssh/staging.key
+          cat >>~/.ssh/config <<END
+          echo ${HCLOUD_TOKEN}
+          echo ${SSH_ID_RSA_PRIVATE}
+          echo ${SSH_ID_RSA_PUBLIC}
+          echo ${SSH_ID_RSA_PRIVATE} > ~/.ssh/id_rsa
+          echo ${SSH_ID_RSA_PUBLIC} > ~/.ssh/id_rsa.pub
+          cat ~/.ssh/id_rsa
+          cat ~/.ssh/id_rsa.pub
+          Host production
+            HostName $SSH_HOST
+            User $SSH_USER
+            IdentityFile ~/.ssh/staging.key
+            StrictHostKeyChecking no
+          END
+        # env:
+        #   SSH_USER: ${{ secrets.STAGING_SSH_USER }}
+        #   SSH_KEY: ${{ secrets.STAGING_SSH_KEY }}
+        #   SSH_HOST: ${{ secrets.STAGING_SSH_HOST }}
+        #   TF_VAR_hcloud_token: ${{ vars.HCLOUD_TOKEN }}
+        #   HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
+
+      - name: Terraform Init
+        id: init
+        run: terraform init
+        working-directory: "./k3s-kube"
+
+      - name: Terraform format
+        id: fmt
+        run: terraform fmt -check
+        working-directory: "./k3s-kube"
+      
+      - name: Terraform validate
+        id: validate
+        run: terraform validate
+        working-directory: "./k3s-kube"
+      
+      - name: Terraform plan
+        id: plan
+        if: github.event_name == 'pull_request'
+        run: terraform plan -no-color -input=false
+        continue-on-error: false
+        working-directory: "./k3s-kube"
+
+      - uses: actions/github-script@v6
+        if: github.event_name == 'pull_request'
+        env:
+          PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+        with:
+          script: |
+            const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+            #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+            #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
+            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+  
+            <details><summary>Show Plan</summary>
+  
+            \`\`\`\n
+            ${process.env.PLAN}
+            \`\`\`
+  
+            </details>
+            *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+  
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+
+      - name: Terraform Plan Status
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
+
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: terraform apply -auto-approve
+        working-directory: "./k3s-kube"
+
+      - name: Terraform State
+        uses: sturlabragason/terraform_state_artifact@v1
+        with:
+          encryptionkey: ${{ secrets.ENCRYPTIONKEY }}
+
+      
+      - name: Hcloud Servers list
+        run: |
+           hcloud server list
+           hcloud load-balancer list
+           END
+
