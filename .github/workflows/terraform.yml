@@ -51,7 +51,7 @@ jobs:
       - name: Terraform Init
         uses: hashicorp/terraform-github-actions/init@v0.4.0
         env:
-          TF_VAR_hcloud_token: ${{ env.HCLOUD_TOKEN }}
+          TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
           TF_LOG: INFO
         
       - name: Set up secret file
