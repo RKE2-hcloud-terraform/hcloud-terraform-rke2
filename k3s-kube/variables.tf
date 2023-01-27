@@ -18,7 +18,7 @@ variable "location" {
 
 variable "cluster_name" {
   type        = string
-  default     = "devops2go-k3s-lab"
+  default     = "devops2go-k3s-lab1"
   description = "hcloud k3s cluster name"
 }
 
