@@ -62,13 +62,22 @@ jobs:
       #     TF_VAR_hcloud_token: ${{ vars.HCLOUD_TOKEN }}
       #     HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
 
-      - uses: webfactory/ssh-agent@v0.7.0
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
         with:
-            ssh-private-key: |
-              ${{ secrets.SSH_ID_RSA_PUBLIC }}
-              ${{ secrets.SSH_ID_RSA_PRIVATE }}
-            ssh-agent-cmd: ssh-agent
-            ssh-add-cmd: ssh-add
+          key: ${{ secrets.SSH_ID_RSA_PRIVATE }}
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
+          name: id_rsa 
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_ID_RSA_PRIVATE }}
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
+          name: id_rsa 
+          
+      - name: Deploy to Webfaction
+        run: |
+          make rsync_upload 
 
 
       - name: Terraform Init
