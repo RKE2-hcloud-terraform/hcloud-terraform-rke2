@@ -65,16 +65,7 @@ jobs:
       - name: Create SSH key
         run: |
           mkdir -p ~/.ssh/
-          echo "$SSH_ID_RSA_PRIVATE" > ~/.ssh/id_rsa
-          sudo chmod 600 ~/.ssh/id_rsa
-          echo "$SSH_ID_RSA_PUBLIC" > ~/.ssh/id_rsa.pub
-          sudo chmod 600 ~/.ssh/id_rsa.pub
-
-        shell: bash
-        env:
-          SSH_PRIVATE_KEY: ${{secrets.SSH_ID_RSA_PRIVATE}}
-          SSH_KNOWN_HOSTS: ${{secrets.SSH_ID_RSA_PUBLIC}}
-          SSH_KEY_PATH: ${{ github.workspace }}/.ssh/
+          ssh-keygen -q -t rsa -N '' -f ~/.ssh/id_rsa <<<y >/dev/null 2>&1
 
       - name: Terraform Init
         id: init
@@ -135,10 +126,6 @@ jobs:
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve
         working-directory: "./k3s-kube"
-        env:
-          SSH_PRIVATE_KEY: ${{secrets.SSH_ID_RSA_PRIVATE}}
-          SSH_KNOWN_HOSTS: ${{secrets.SSH_ID_RSA_PUBLIC}}
-          SSH_KEY_PATH: ${{ github.workspace }}/.ssh/
 
       - name: Terraform State
         uses: sturlabragason/terraform_state_artifact@v1
