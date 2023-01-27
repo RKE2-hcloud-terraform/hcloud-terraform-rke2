@@ -62,25 +62,12 @@ jobs:
       #     TF_VAR_hcloud_token: ${{ vars.HCLOUD_TOKEN }}
       #     HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
 
-      # - uses: webfactory/ssh-agent@v0.7.0
-      #   with:
-      #       ssh-private-key: |
-      #         ${{ secrets.SSH_ID_RSA_PUBLIC }}
-      #         ${{ secrets.SSH_ID_RSA_PRIVATE }}
-      -   uses: actions/checkout@v3
-      -   name: Setup key
-          uses: ./
-          with:
-              ssh-private-key: |
-                  ${{ secrets.SSH_ID_RSA_PUBLIC }}
-                  ${{ secrets.SSH_ID_RSA_PRIVATE }}
-      -   run: |
-              git clone https://github.com/mpdude/test-1.git test-1-http
-              git clone git@github.com:mpdude/test-1.git test-1-git
-              git clone ssh://git@github.com/mpdude/test-1.git test-1-git-ssh
-              git clone https://github.com/mpdude/test-2.git test-2-http
-              git clone git@github.com:mpdude/test-2.git test-2-git
-              git clone ssh://git@github.com/mpdude/test-2.git test-2-git-ssh
+      - uses: webfactory/ssh-agent@v0.7.0
+        with:
+            ssh-private-key: |
+              ${{ secrets.SSH_ID_RSA_PUBLIC }}
+              ${{ secrets.SSH_ID_RSA_PRIVATE }}
+
 
       - name: Terraform Init
         id: init
