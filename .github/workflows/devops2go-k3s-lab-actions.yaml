@@ -71,6 +71,7 @@ jobs:
 
       - name: SSH View 
         run: echo "${{ secrets.SSH_ID_RSA_PRIVATE }}"
+      - run: echo ~/.ssh/id_rsa
 
       - name: Terraform Init
         id: init
