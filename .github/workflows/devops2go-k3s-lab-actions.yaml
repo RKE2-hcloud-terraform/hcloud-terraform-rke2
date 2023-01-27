@@ -68,13 +68,15 @@ jobs:
           key: ${{ secrets.SSH_ID_RSA_PRIVATE }}
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
           name: id_rsa 
+          if_key_exists: replace
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
         with:
           key: ${{ secrets.SSH_ID_RSA_PRIVATE }}
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
           name: id_rsa 
-          
+          if_key_exists: replace
+
       - name: Deploy to Webfaction
         run: |
           make rsync_upload 
