@@ -62,11 +62,11 @@ jobs:
       #     TF_VAR_hcloud_token: ${{ vars.HCLOUD_TOKEN }}
       #     HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
 
-      - name: Create SSH key
-        run: |
-          mkdir -p ~/.ssh/
-          ssh-keygen -q -t rsa -N '' -f ~/.ssh/id_rsa <<<y >/dev/null 2>&1
-          echo ~/.ssh/id_rsa.pub
+      - uses: webfactory/ssh-agent@v0.7.0
+        with:
+            ssh-private-key: |
+              ${{ secrets.SSH_ID_RSA_PUBLIC }}
+              ${{ secrets.SSH_ID_RSA_PRIVATE }}
 
       - name: Terraform Init
         id: init
@@ -127,6 +127,9 @@ jobs:
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve
         working-directory: "./k3s-kube"
+        env:
+            SSH_ID_RSA_PRIVATE: ${{secrets.SSH_ID_RSA_PRIVATE}}
+            SSH_ID_RSA_PUBLIC: ${{secrets.SSH_ID_RSA_PUBLIC}}
 
       - name: Terraform State
         uses: sturlabragason/terraform_state_artifact@v1
