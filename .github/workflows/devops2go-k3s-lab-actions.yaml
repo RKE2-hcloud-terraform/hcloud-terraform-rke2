@@ -36,7 +36,6 @@ jobs:
         run: |
           mkdir -p ~/.ssh/
           exec ssh-agent bash
-          ssh-add ~/.ssh/id_rsa
           ssh-keygen -q -t rsa -N '' -f ~/.ssh/id_rsa <<<y >/dev/null 2>&1
           echo "$SSH_KEY" > ~/.ssh/staging.key
           chmod 600 ~/.ssh/staging.key
@@ -46,14 +45,13 @@ jobs:
           echo ${SSH_ID_RSA_PUBLIC}
           echo ${{ secrets.SSH_ID_RSA_PRIVATE }} >> ~/.ssh/id_rsa
           echo ${{ secrets.SSH_ID_RSA_PUBLIC }} >> ~/.ssh/id_rsa.pub
-          ssh-add ~/.ssh/id_rsa
-          ls -1 ~/.ssh/
-          cat>>~/.ssh/id_rsa
-          cat>>~/.ssh/id_rsa.pub
+          ssh-add ~/.ssh/
+          # cat>>~/.ssh/id_rsa
+          # cat>>~/.ssh/id_rsa.pub
           # Host production
           #   HostName $SSH_HOST
           #   User $SSH_USER
-          #   IdentityFile ~/.ssh/staging.key
+          #   IdentityFile ~/.ssh/id_rsa
           #   StrictHostKeyChecking no
           END
         env:
