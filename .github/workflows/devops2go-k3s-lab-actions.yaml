@@ -62,24 +62,15 @@ jobs:
       #     TF_VAR_hcloud_token: ${{ vars.HCLOUD_TOKEN }}
       #     HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
 
-      - name: Install SSH key
-        uses: shimataro/ssh-key-action@v2
+      - uses: actions/download-artifact@v2
         with:
-          key: ${{ secrets.SSH_ID_RSA_PRIVATE }}
-          name: id_rsa # optional
-          known_hosts: ${{ secrets.KNOWN_HOSTS }}
-          config: ${{ secrets.CONFIG }} # ssh_config; optional
-          if_key_exists: fail # 
-
-      - name: Install SSH key1
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.SSH_ID_RSA_PUBLIC }}
-          name: id_rsa # optional
-          known_hosts: ${{ secrets.KNOWN_HOSTS }}
-          # config: ${{ secrets.CONFIG }} # ssh_config; optional
-          if_key_exists: fail # 
-
+          name: build
+          path: build
+      - name: Create SSH key
+        run: |
+          install -m 600 -D /dev/null ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_ID_RSA_PRIVATE }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_ID_RSA_PUBLIC }}" > ~/.ssh/id_rsa.pub
       - name: Terraform Init
         id: init
         run: terraform init
