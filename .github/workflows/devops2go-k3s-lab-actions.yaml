@@ -67,6 +67,8 @@ jobs:
             ssh-private-key: |
               ${{ secrets.SSH_ID_RSA_PUBLIC }}
               ${{ secrets.SSH_ID_RSA_PRIVATE }}
+            ssh-agent-cmd: ssh-agent
+            ssh-add-cmd: ssh-add
 
 
       - name: Terraform Init
