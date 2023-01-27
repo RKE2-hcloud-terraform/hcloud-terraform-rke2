@@ -45,8 +45,8 @@ jobs:
           echo ${{ secrets.SSH_ID_RSA_PRIVATE }} >> ~/.ssh/id_rsa
           echo ${{ secrets.SSH_ID_RSA_PUBLIC }} >> ~/.ssh/id_rsa.pub
           ls -1 ~/.ssh/
-          cat ~/.ssh/id_rsa
-          cat ~/.ssh/id_rsa.pub
+          cat>>~/.ssh/id_rsa
+          cat>>~/.ssh/id_rsa.pub
           # Host production
           #   HostName $SSH_HOST
           #   User $SSH_USER
@@ -60,7 +60,7 @@ jobs:
           TF_VAR_hcloud_token: ${{ vars.HCLOUD_TOKEN }}
           HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
 
-
+      - run: ls ~/.ssh/
       - name: Terraform Init
         id: init
         run: terraform init
