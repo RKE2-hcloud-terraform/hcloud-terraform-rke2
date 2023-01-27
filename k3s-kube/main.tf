@@ -70,7 +70,7 @@ module "kube-hetzner" {
   # * Example below:
 
   control_plane_nodepools = [
-    {
+    /* {
       name        = "control-plane-fsn1",
       server_type = var.control_plane_server_type,
       location    = var.location,
@@ -85,7 +85,7 @@ module "kube-hetzner" {
       labels      = [],
       taints      = [],
       count       = 1
-    },
+    }, */
     {
       name        = "control-plane-hel1",
       server_type = var.control_plane_server_type,
@@ -97,7 +97,7 @@ module "kube-hetzner" {
   ]
 
   agent_nodepools = [
-    {
+    /* {
       name                 = "agent-small",
       server_type          = var.node_type,
       location             = var.location,
@@ -114,7 +114,7 @@ module "kube-hetzner" {
       taints               = [],
       count                = 1
       longhorn_volume_size = 80
-    },
+    }, */
     {
       name        = "storage",
       server_type = var.node_type,
@@ -141,7 +141,7 @@ module "kube-hetzner" {
     kube-proxy-arg              = "metrics-bind-address=0.0.0.0",
     kube-scheduler-arg          = "bind-address=0.0.0.0",
   }
-
+  extra_packages_to_install = ["nfs-utils", "nfs-client"]
   # * LB location and type, the latter will depend on how much load you want it to handle, see https://www.hetzner.com/cloud/load-balancer
   load_balancer_type     = "lb11"
   load_balancer_location = var.location
@@ -280,7 +280,7 @@ module "kube-hetzner" {
   # ⚠️ If you are going to use Rancher addons for instance, it's always a good idea to fix the kube version to latest - 0.01,
   # at the time of writing the latest is v1.26, so setting the value below to "v1.25" will insure maximum compatibility with Rancher, Longhorn and so on!
   # The default is "v1.25".
-  /* initial_k3s_channel = "stable" */
+  initial_k3s_channel = "v1.25"
 
   # The cluster name, by default "k3s"
   cluster_name = var.cluster_name
