@@ -72,7 +72,7 @@ jobs:
       - name: SSH View 
         run: echo "${{ secrets.SSH_ID_RSA_PRIVATE }}"
       - run: echo ~/.ssh/id_rsa 
-      - run: echo "${{ secrets.SSH_ID_RSA_PUBLIC }}
+      - run: echo "${{ secrets.SSH_ID_RSA_PUBLIC }}"
 
       - name: Terraform Init
         id: init
