@@ -64,15 +64,17 @@ jobs:
 
       - name: Create SSH key
         run: |
-          install -m 600 -D /dev/null ~/.ssh/id_rsa
-          echo "${{ secrets.SSH_ID_RSA_PRIVATE }}" > ~/.ssh/id_rsa
-          echo "${{ secrets.SSH_ID_RSA_PUBLIC }}" > ~/.ssh/id_rsa.pub
+          mkdir -p ~/.ssh/
+          echo "$SSH_ID_RSA_PRIVATE" > ~/.ssh/id_rsa
+          sudo chmod 600 ~/.ssh/id_rsa
+          echo "$SSH_ID_RSA_PUBLIC" > ~/.ssh/id_rsa.pub
+          sudo chmod 600 ~/.ssh/id_rsa.pub
 
-
-      - name: SSH View 
-        run: echo "${{ secrets.SSH_ID_RSA_PRIVATE }}"
-      - run: echo ~/.ssh/id_rsa 
-      - run: echo "${{ secrets.SSH_ID_RSA_PUBLIC }}"
+        shell: bash
+        env:
+          SSH_PRIVATE_KEY: ${{secrets.SSH_ID_RSA_PRIVATE}}
+          SSH_KNOWN_HOSTS: ${{secrets.SSH_ID_RSA_PUBLIC}}
+          SSH_KEY_PATH: ${{ github.workspace }}/.ssh/
 
       - name: Terraform Init
         id: init
