@@ -47,7 +47,7 @@ jobs:
           exec ssh-agent bash
           ssh-keygen -q -t rsa -N '' -f ~/.ssh/id_rsa <<<y >/dev/null 2>&1
           eval ssh-agent $SHELL
-          ssh-add ~/.ssh/id_rsa
+          ssh-add ~/.ssh/
           ssh-add -l
           echo "$SSH_KEY" > ~/.ssh/staging.key
           chmod 600 ~/.ssh/staging.key
@@ -60,7 +60,7 @@ jobs:
           # Host production
           #   HostName $SSH_HOST
           #   User $SSH_USER
-          #   IdentityFile ~/.ssh/id_rsa
+          #   IdentityFile ~/.ssh/
           #   StrictHostKeyChecking no
           END
         # env:
