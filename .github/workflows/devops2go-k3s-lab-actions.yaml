@@ -83,7 +83,8 @@ jobs:
             ~/.ssh
 
       - name: check files 
-        run: ls "./k3s-kube/"
+        run: ls 
+      - run: pwd
 
       
       # - name: Terraform plan
