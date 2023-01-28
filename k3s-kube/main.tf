@@ -241,11 +241,11 @@ module "kube-hetzner" {
   # For example limiting reboots to certain timeframes. For all options see: https://kured.dev/docs/configuration/
   # The default options are: `--reboot-command=/usr/bin/systemctl reboot --pre-reboot-node-labels=kured=rebooting --post-reboot-node-labels=kured=done --period=5m`
   # Defaults can be overridden by using the same key.
-   kured_options = {
-     "reboot-days": "su"
-     "start-time": "1am"
-     "end-time": "8am"
-   }
+  kured_options = {
+    "reboot-days" : "su"
+    "start-time" : "1am"
+    "end-time" : "8am"
+  }
 
   # Allows you to specify either stable, latest, testing or supported minor versions.
   # see https://rancher.com/docs/k3s/latest/en/upgrades/basic/ and https://update.k3s.io/v1-release/channels

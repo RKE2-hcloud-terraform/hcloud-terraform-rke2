@@ -14,5 +14,5 @@ output "kubeconfig_data" {
 }
 
 output "kubeconfig_ipv4_address" {
-  value     = module.kube-hetzner.control_planes_public_ipv4
+  value = module.kube-hetzner.control_planes_public_ipv4
 }
