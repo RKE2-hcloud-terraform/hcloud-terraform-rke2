@@ -93,7 +93,7 @@ jobs:
         working-directory: "./k3s-kube"
 
       - name: Upload Artfacts
-        uses: actions/upload-artfact@v3
+        uses: actions/upload-artifact@v3
         with:
           name: terraform
           path: |
