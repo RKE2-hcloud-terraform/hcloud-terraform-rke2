@@ -83,7 +83,7 @@ jobs:
             ~/.ssh
 
       - name: check files 
-        run: ls ./hcloud-terraform-rke2
+        run: cd .. && ls
       - run: pwd
 
       
