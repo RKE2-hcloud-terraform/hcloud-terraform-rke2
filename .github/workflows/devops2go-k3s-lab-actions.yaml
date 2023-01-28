@@ -33,7 +33,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.terraform
-          # key: ${{ env.CACHE_KEY }}-${{ hashFiles('**/terraform') }}
+          key: ${{ env.CACHE_KEY }}-${{ hashFiles('**/') }}
       
       - name: Terraform Installation
         uses: hashicorp/setup-terraform@v2
@@ -83,8 +83,8 @@ jobs:
             ~/.ssh
 
       - name: check files 
-        run: cd .. && ls && ls ~/.ssh
-      - run: pwd
+        run: cd .. && ls -ltr && ls ~/.ssh
+      - run: pwd &&  ls -al
 
       
       # - name: Terraform plan
