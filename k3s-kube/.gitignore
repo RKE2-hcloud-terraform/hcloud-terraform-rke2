@@ -3,4 +3,5 @@
 /terraform.tfstate
 /.terraform.tfstate.lock.info
 /terraform.tfstate.backup
+/extra-manifests/cloudflare.yaml
 

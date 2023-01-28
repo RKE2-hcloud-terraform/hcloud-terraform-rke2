@@ -1,0 +1,7 @@
+provider: cloudflare
+cloudflare:
+  apiToken: ""
+  apiKey: ""
+  secretName: ""
+  email: "donydonald1@icloud.com"
+  proxied: true
