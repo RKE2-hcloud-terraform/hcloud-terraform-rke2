@@ -83,7 +83,7 @@ jobs:
             ~/.ssh
 
       - name: check files 
-        run: ls 
+        run: ls ..terraform
       - run: pwd
 
       
