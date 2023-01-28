@@ -82,7 +82,8 @@ jobs:
             ./k3s-kube/.terraform.lock.hcl
             ~/.ssh
 
-
+      - name: check files 
+        run: ls ./k3s-kube/
 
       
       # - name: Terraform plan
