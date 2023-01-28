@@ -78,7 +78,7 @@ jobs:
         with:
           name: terraform
           path: |
-            ../.terraform
+            ./.terraform
             ./k3s-kube/.terraform.lock.hcl
             ~/.ssh
 
